@@ -1,0 +1,38 @@
+sequenceDiagram
+    autonumber
+    participant DApp
+    participant PrivateEncryptionService
+    participant RSAPublicKeyStorageContract
+    participant Storage
+
+    Note over DApp,PrivateEncryptionService: Setup
+
+		DApp->>DApp: Generate: Sender generates an encryption key for a specified method
+		DApp->>PrivateEncryptionService: Sends persistant "private file encryption key" (totally independant of the wallet signing key)
+		DApp->>RSAPublicKeyStorageContract: Publish public file encryption key (specified method and the public key)
+		
+		Note over DApp,PrivateEncryptionService: Encrypting a file using a key managed by PrivateEncryptionService
+
+		DApp->>RSAPublicKeyStorageContract: Request the receivers file "public encryption key" associated with their wallet addresses
+		RSAPublicKeyStorageContract-->>DApp: Returns the receiver's public keys
+        DApp->>DApp: Generate symmetric key
+		DApp->>PrivateEncryptionService: Upload symmetric key with "public encryption key" 
+		
+		PrivateEncryptionService->>PrivateEncryptionService: Generate cyphers of symmetric key for each receiver public keys
+    PrivateEncryptionService-->>DApp: Return cyphers of symmetric key for each receiver public keys
+
+    DApp->>DApp: Encrypt file with symmetric key
+    DApp->>DApp: Prefix encrypted file with receivers public keys and associated cyphers
+
+    DApp->>Storage: Store file
+		
+    Note over DApp,PrivateEncryptionService: Decrypting a file using a key managed by PrivateEncryptionService
+    Storage-->>DApp: Retrieve file prefixed with receivers public keys and associated cyphers
+    PrivateEncryptionService-->>DApp: Get receiver "public encryption key"
+    DApp->>DApp: Parse prefix for cypher associated with receiver "public encryption key" 
+    DApp-->>PrivateEncryptionService: Send cypher of symmetric key
+    PrivateEncryptionService->>PrivateEncryptionService: Decrypt cypher in turn computing symmetric key
+    PrivateEncryptionService-->>DApp: Retrieve symmetric key
+    DApp->>DApp: Decrypt file with symmetric key
+    DApp->>DApp: Display or download decrypted file
+    
