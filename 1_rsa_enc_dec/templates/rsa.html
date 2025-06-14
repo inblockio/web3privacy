@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSA Key Generation and File Encryption/Decryption</title>
+</head>
+<body>
+    <h1>RSA Key Generation and File Encryption/Decryption</h1>
+
+    <!-- RSA Key Generation Section -->
+    <h2>1. Generate RSA Key Pair</h2>
+    <button id="generateRSAKeysButton">Generate RSA Key Pair</button>
+    <br><br>
+    <h3>Public Key:</h3>
+    <pre id="publicKey"></pre>
+    <h3>Private Key:</h3>
+    <pre id="privateKey"></pre>
+
+    <br><br>
+
+    <!-- File Encryption Section -->
+    <h2>2. Encrypt a File</h2>
+    <label for="file">Select file to encrypt:</label>
+    <input type="file" id="file" required>
+    <br><br>
+    <button id="encryptButton">Encrypt File</button>
+
+    <br><br>
+
+    <!-- File Upload Section -->
+    <h2>3. Upload the Encrypted File</h2>
+    <button id="uploadButton" disabled>Upload Encrypted File</button>
+
+    <br><br>
+
+    <!-- File Decryption Section -->
+    <h2>4. Decrypt Encrypted File</h2>
+    <input type="file" id="encryptedFileInput" accept=".txt">
+    <br><br>
+    <button id="decryptButton" disabled>Decrypt File</button>
+    <h3>Decrypted File:</h3>
+    <pre id="decryptedText"></pre>
+
+    <script>
+        let privateKey, publicKey;
+        let encryptedBase64Data;  // Store encrypted data to upload
+        let decryptedData;        // Store decrypted file content
+
+        // Function to generate RSA Key Pair (RSA-OAEP for encryption, SHA-256 for hash)
+        async function generateRSAKeyPair() {
+            const keyPair = await window.crypto.subtle.generateKey(
+                {
+                    name: "RSA-OAEP",   // RSA encryption algorithm
+                    modulusLength: 2048, // Key size (2048 or 4096 bits)
+                    publicExponent: new Uint8Array([1, 0, 1]),  // e = 65537
+                    hash: "SHA-256",  // Hash function for RSA
+                },
+                true,  // Extractable
+                ["encrypt", "decrypt"]  // Use for encryption and decryption
+            );
+            privateKey = keyPair.privateKey;
+            publicKey = keyPair.publicKey;
+            console.log("RSA Key Pair generated!");
+
+            // Export keys to JWK format
+            const publicKeyJwk = await window.crypto.subtle.exportKey("jwk", publicKey);
+            const privateKeyJwk = await window.crypto.subtle.exportKey("jwk", privateKey);
+
+            // Display keys in the HTML
+            document.getElementById('publicKey').textContent = JSON.stringify(publicKeyJwk, null, 2);
+            document.getElementById('privateKey').textContent = JSON.stringify(privateKeyJwk, null, 2);
+
+            // Save keys in cookies
+            setCookie("publicKey", JSON.stringify(publicKeyJwk), 7);
+            setCookie("privateKey", JSON.stringify(privateKeyJwk), 7);
+        }
+
+        // Save a cookie with a specific expiration time (in days)
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + d.toUTCString();
+            document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/";
+        }
+
+        // Get a cookie value by name
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+            }
+            return null;
+        }
+
+        // Check if RSA keys are already saved in cookies
+        function loadRSAKeysFromCookie() {
+            const publicKeyJwk = getCookie("publicKey");
+            const privateKeyJwk = getCookie("privateKey");
+
+            if (publicKeyJwk && privateKeyJwk) {
+                publicKey = JSON.parse(publicKeyJwk);
+                privateKey = JSON.parse(privateKeyJwk);
+
+                // Display keys in the HTML
+                document.getElementById('publicKey').textContent = publicKeyJwk;
+                document.getElementById('privateKey').textContent = privateKeyJwk;
+                console.log("RSA Keys loaded from cookies.");
+            }
+        }
+
+        // Encrypt the file using RSA public key (RSA-OAEP encryption)
+        async function encryptFileWithRSA(file) {
+            if (!publicKey) {
+                alert("RSA public key is not available. Please generate it first.");
+                return;
+            }
+
+            // Convert the file to an ArrayBuffer for encryption
+            const fileReader = new FileReader();
+            fileReader.onload = async function() {
+                const fileData = fileReader.result;
+
+                try {
+                    // Step 1: Export the public key to SPKI format and convert to ArrayBuffer
+                    const exportedPublicKey = await window.crypto.subtle.exportKey("spki", publicKey);
+
+                    // Step 2: Import the public key in SPKI format (as ArrayBuffer)
+                    const importedPublicKey = await window.crypto.subtle.importKey(
+                        "spki", // Import in SPKI format (for RSA public key)
+                        exportedPublicKey,
+                        { name: "RSA-OAEP", hash: "SHA-256" },
+                        false,
+                        ["encrypt"]
+                    );
+
+                    // Step 3: Encrypt the file with RSA-OAEP using the public key
+                    const encryptedData = await window.crypto.subtle.encrypt(
+                        {
+                            name: "RSA-OAEP",
+                        },
+                        importedPublicKey,
+                        fileData
+                    );
+
+                    // Convert the encrypted data to Base64
+                    encryptedBase64Data = arrayBufferToBase64(encryptedData);
+
+                    // Enable the upload button after encryption
+                    document.getElementById('uploadButton').disabled = false;
+                    alert("File encrypted successfully! You can now upload the encrypted file.");
+                } catch (error) {
+                    console.error("Error during encryption:", error);
+                    alert("Encryption failed: " + error.message);
+                }
+            };
+
+            fileReader.readAsArrayBuffer(file);
+        }
+
+        // Function to convert ArrayBuffer to Base64 for uploading
+        function arrayBufferToBase64(buffer) {
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            const length = bytes.byteLength;
+            for (let i = 0; i < length; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary);
+        }
+
+        // Function to upload the encrypted file
+        async function uploadEncryptedFile() {
+            if (!encryptedBase64Data) {
+                alert("No file has been encrypted yet.");
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append("file", new Blob([encryptedBase64Data], { type: "text/plain" }), "encryptedFile.txt");
+
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert('Encrypted file uploaded successfully');
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error uploading encrypted file:', error);
+                alert('Failed to upload encrypted file.');
+            }
+        }
+
+        // Decrypt the file using RSA private key (RSA-OAEP decryption)
+        async function decryptFileWithRSA(file) {
+            if (!privateKey) {
+                alert("RSA private key is not available. Please generate it first.");
+                return;
+            }
+
+            const fileReader = new FileReader();
+            fileReader.onload = async function() {
+                const encryptedData = fileReader.result;
+
+                try {
+                    // Step 1: Import the private key
+                    const exportedPrivateKey = await window.crypto.subtle.exportKey("pkcs8", privateKey);
+
+                    // Step 2: Import the private key for decryption
+                    const importedPrivateKey = await window.crypto.subtle.importKey(
+                        "pkcs8", // Import in PKCS#8 format (for RSA private key)
+                        exportedPrivateKey,
+                        { name: "RSA-OAEP", hash: "SHA-256" },
+                        false,
+                        ["decrypt"]
+                    );
+
+                    // Step 3: Decrypt the file using the private key
+                    const decryptedData = await window.crypto.subtle.decrypt(
+                        {
+                            name: "RSA-OAEP",
+                        },
+                        importedPrivateKey,
+                        encryptedData
+                    );
+
+                    // Convert decrypted data to text
+                    decryptedData = new TextDecoder().decode(decryptedData);
+
+                    // Display the decrypted content
+                    document.getElementById("decryptedText").textContent = decryptedData;
+
+                    alert("File decrypted successfully!");
+                } catch (error) {
+                    console.error("Error during decryption:", error);
+                    alert("Decryption failed: " + error.message);
+                }
+            };
+
+            fileReader.readAsArrayBuffer(file);
+        }
+
+        // When the generate keys button is clicked
+        document.getElementById("generateRSAKeysButton").onclick = async function() {
+            await generateRSAKeyPair();
+        };
+
+        // When the encrypt button is clicked
+        document.getElementById("encryptButton").onclick = async function() {
+            const fileInput = document.getElementById("file");
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Please select a file first.");
+                return;
+            }
+
+            // Encrypt the file and enable the upload button
+            await encryptFileWithRSA(file);
+        };
+
+        // When the upload button is clicked
+        document.getElementById("uploadButton").onclick = async function() {
+            await uploadEncryptedFile();
+        };
+
+        // When the decrypt button is clicked
+        document.getElementById("decryptButton").onclick = async function() {
+            const encryptedFileInput = document.getElementById("encryptedFileInput");
+            const file = encryptedFileInput.files[0];
+
+            if (!file) {
+                alert("Please select the encrypted file first.");
+                return;
+            }
+
+            // Decrypt the file using the private key
+            await decryptFileWithRSA(file);
+        };
+
+        // Load RSA keys from cookies if available
+        loadRSAKeysFromCookie();
+    </script>
+</body>
+</html>
