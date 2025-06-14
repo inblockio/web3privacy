@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import nacl from "tweetnacl";
 import { encodeBase64, decodeUTF8 } from "tweetnacl-util";
 
-import { Footer, Header } from './components';
+import { Footer, Header, FileUploader } from './components';
 import { GlobalStyle } from './config/theme';
 import { ToggleThemeContext } from './Root';
 
@@ -250,6 +250,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
 
   // </CRYPTO>
 
+  // <SERVER AND SNAP>
 
   // --- Upload ---
   const handleUpload = async () => {
@@ -277,6 +278,48 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
     setUploading(false);
   };
 
+
+  const handleFilesAutomatic = async (files: File[]) => {
+    const accounts = await window.ethereum.request({ method: 'eth_accounts' }) as string[] | undefined | null;
+    const [walletAddress] = accounts ?? [];
+
+    const file = files[0];
+    if (!file)
+      return;
+    const arrayBuffer = await file.arrayBuffer();
+    const fileUint8 = new Uint8Array(arrayBuffer);
+    const fileHash = hashFileSHA256(file);
+    const result : any = await window.ethereum.request({
+      method: 'wallet_invokeSnap',
+      params: {
+        snapId,
+        request: {
+          method: 'getSymKey',
+          params: {
+            fileHash, 
+            walletAddress
+          },
+        },
+      },
+    });
+    console.log(result.symKey);
+
+    // // Generate a random nonce for this encryption
+    const nonce = nacl.randomBytes(nacl.secretbox.nonceLength);
+
+    // Encrypt the file
+    const encrypted = nacl.secretbox(fileUint8, nonce, secretKey);
+
+    // For storage or transmission, encode nonce and encrypted data as base64
+    const encryptedBase64 = encodeBase64(encrypted);
+    const nonceBase64 = encodeBase64(nonce);
+
+    // Example: Save or send { encryptedBase64, nonceBase64 }
+    console.log({ encryptedBase64, nonceBase64 });
+  };
+
+  // </SERVER AND SNAP>
+  
 
   // --- Load keys from cookies on mount ---
   useEffect(() => {
@@ -348,6 +391,10 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
 
           <Section>
             <h2>3. Upload the Encrypted File</h2>
+            <FileUploader 
+              onFilesSelected={handleFilesAutomatic} 
+              snapConnected={snapConnected}
+            />
             <Button type="button" onClick={handleUpload} disabled={!encryptedBase64Data || uploading}>
               Upload Encrypted File
             </Button>
