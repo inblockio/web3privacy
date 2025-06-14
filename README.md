@@ -1,4 +1,4 @@
-# web3privacy
+# Encrypt IT!
 Collab git, to have a shared resource. Including proposal for EIP and and the Hack.MD. Idea to contemplate: PGP for Web3.
 
 ## What is what
@@ -6,3 +6,65 @@ Collab git, to have a shared resource. Including proposal for EIP and and the Ha
 - 1_rsa_enc_dec is an implementation draft for in-browser RSA-OAEP-256 key generation, encryption and decryption
 - 2_sol_pub_key_store includes the solidity contract to store RSA pub keys mapped to Eth address | Pol ca: 0x34C2fd871e36aE116C70F5990Da6E7B5Df15CB21
 - 3_wallet-encrypt is the nodejs service, running on a traditional server for demo purposes (but it can be replace to a decentralized storage, making the project 99% web3, except the ETH API)
+
+## Submission
+- **Track:** Applied Encryption
+- **Team/Contributors:**
+
+@David hacker
+@Six hacker and business developer
+@Mörk cryptography, development
+@Flo - Developer and DevOp
+@Timotheus architecture and vision
+
+- **Repository:** [Link to your code repository]
+- **Demo:** [Link to live demo, video, or screenshots]
+
+## Description (TL;DR)
+Where is the secure encryption/decryption functionality with Ethereum wallets?
+We explored why the function was deprecated from MetaMask, what are current limitations in Ethereum wallets and why applications build their own solutions and handle encryption/decryption functions within the application instead of the secure domain of the wallet.
+
+The need for secure, wallet based encryption key handling became painfully obvios and how its currently not possible with existing ethereum wallets.
+We explored an approach for encryption and decryption with wallets and documented it.
+
+We build a prototype which uses a local first approach with a separate encryption key and an on-chain secure public key registry mapping encryption keys to wallets.
+
+## Problem
+**Lack of Standardized Encryption and Decryption in Ethereum Wallets**
+Ethereum wallets (e.g., MetaMask) lack a standardized API for encrypting/decrypting data using a user’s private key, leading to significant challenges:
+- **Custom Implementations Required**: Applications must build their own encryption/decryption solutions, often involving:
+  - Direct use of Ethereum private keys outside the wallet’s secure environment.
+  - Generating and managing separate keys within the application.
+  - Increased risk of security vulnerabilities due to non-standardized approaches.
+  - Limited ability to keep user data private within application contexts, reducing security.
+- **Security Risks**: Inconsistent or weak encryption methods implemented by developers increase the risk of exploits.
+- **Interoperability Issues**: Data encrypted by one application may not be decryptable by another due to differing encryption techniques, hindering seamless data sharing in the Ethereum ecosystem.
+
+## Solution
+Upgrade Ethereum wallet standards to support
+secure key handling within the enclave of the wallets.
+
+Introduce a default API for ethers.encryption & ethers.decryption
+again which has a new logic which handles symmetric key encryption and decryption
+against ethereum wallets.
+
+Ethereum wallets register their asymmetric keys within the ethereum network (e.g. polygon for costs reasons)
+as secure and verifiable public-key registries making a diffy hellman key-exchange obsolete.
+
+## Technology Stack
+- Node.js
+- Snaps (Metamask, optional)
+- RSA encrytion
+- SoliditySmart contract for key registry.
+
+## Privacy Impact
+TBA
+
+## Real-World Use Cases
+[Who would use this and how?]
+
+## Business Logic
+[Sustainability/monetization considerations]
+
+## What's Next
+[Future development plans]
