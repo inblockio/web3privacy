@@ -108,11 +108,11 @@ export const HeaderButtons = () => {
   }
 
   if (!installedSnap) {
-    return <ConnectButton onClick={requestSnap} />;
+    return <ConnectButton onClick={ ()=> { console.log('GOT CONNECT BUTTON CLICK'); requestSnap()}} />;
   }
 
   if (shouldDisplayReconnectButton(installedSnap)) {
-    return <ReconnectButton onClick={requestSnap} />;
+    return <ReconnectButton onClick={ ()=> { console.log('GOT CONNECT BUTTON CLICK'); requestSnap()}} />;
   }
 
   return (
