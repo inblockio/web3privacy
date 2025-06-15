@@ -1,7 +1,7 @@
 # Concept: Wallet Encryption/Decryption
 - DRAFT -
 
-![image](images/schema.png)
+![image](images/concept.png)
 
 ## The Ethereum encryption API facilitates secure data encryption/decryption using a symmetric key managed within an Ethereum wallet. It includes three APIs:
 1.  Request Symmetric Key API:
