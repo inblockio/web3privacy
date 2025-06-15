@@ -41,6 +41,7 @@ The three servers will run when you run `yarn install` from the `wallet-encrypt`
 
 ##### HTML frontend instructions:
 `cd 1_working_demo`, follow the install instructions in that folder's [README](./1_working_demo/README), including running the express server.
+
 This will run the basic `index.html` monolith of our frontend.
 
 ## Description (TL;DR)
