@@ -20,6 +20,26 @@ Collab git, to have a shared resource. Including proposal for EIP and and the Ha
 - **Repository:** [Link to your code repository]
 - **Demo:** [Link to live demo, video, or screenshots]
 
+##### Monorepo instructions
+```
+git clone
+cd wallet-encrypt
+yarn install
+```
+
+This should install the four packages:
+`express` privdes backend functionality to mimic decentralised file storag (our demo is a proof of conecpt and we didn't have time to implement d storage)
+`site` is a React frontend - running `yarn start` from the `wallet-encrypt` folder will run this package's start script and serve the react on [localhost:8000](localhost:8000).
+You also have the opportuniy to `cd site` and `yarn build`. The express erver will then serve the React on  [localhost:3000](localhost:3000) instead.
+Hopefully we will deploy this version by sumbission time
+`snap` runs a port for a Metamaks snap which holds the secret keys. The React frontend interatcs with the snap through the snap's JSON-RPC on port 8080.
+`contracts` contains the publick key registration contract deployment code. See that packages [README](./wallet-encrypt/contracts/README).
+The three servers will run when you run `yarn install` from the `wallet-encrypt` repo.
+
+##### HTML frontend instructions:
+`cd 1_working_demo`, follow the install instructions in that folder's [README](./1_working_demo/README), including running the express server.
+This will run the basic `index.html` monolith of our frontend.
+
 ## Description (TL;DR)
 Where is the secure encryption/decryption functionality with Ethereum wallets?
 We explored why the function was deprecated from MetaMask, what are current limitations in Ethereum wallets and why applications build their own solutions and handle encryption/decryption functions within the application instead of the secure domain of the wallet.
