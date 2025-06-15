@@ -1,4 +1,4 @@
-# [Encrypted]
+# [Encrypt it!]
 
 - **Track:** Applied Encryption, Public Goods
 - **Team/Contributors:** Timotheus, six, MarcelJay, James, Mörk
