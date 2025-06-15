@@ -1,7 +1,12 @@
 {
   "name": "contracts",
   "packageManager": "yarn@4.9.2",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test"
+  },
   "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "hardhat": "^2.24.3"
   }
 }

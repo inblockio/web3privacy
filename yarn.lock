@@ -306,17 +306,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/secp256k1@npm:1.7.1":
+"@noble/secp256k1@npm:1.7.1, @noble/secp256k1@npm:~1.7.0":
   version: 1.7.1
   resolution: "@noble/secp256k1@npm:1.7.1"
   checksum: 10c0/48091801d39daba75520012027d0ff0b1719338d96033890cfe0d287ad75af00d82769c0194a06e7e4fbd816ae3f204f4a59c9e26f0ad16b429f7e9b5403ccd5
-  languageName: node
-  linkType: hard
-
-"@noble/secp256k1@npm:~1.7.0":
-  version: 1.7.2
-  resolution: "@noble/secp256k1@npm:1.7.2"
-  checksum: 10c0/dda1eea78ee6d4d9ef968bd63d3f7ed387332fa1670af2c9c4c75a69bb6a0ca396bc95b5bab437e40f6f47548a12037094bda55453e30b4a23054922a13f3d27
   languageName: node
   linkType: hard
 
@@ -381,6 +374,32 @@ __metadata:
     "@nomicfoundation/edr-linux-x64-musl": "npm:0.11.1"
     "@nomicfoundation/edr-win32-x64-msvc": "npm:0.11.1"
   checksum: 10c0/739ca882a5c3a860f3c7efe5a7903c6c2b180006a278c43da3dff2cb14684e37bf6be64706fb7c29e8af7e054964fa81a99ee6cbfddb7c6e972f2371c16946bd
+  languageName: node
+  linkType: hard
+
+"@nomicfoundation/hardhat-toolbox@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "@nomicfoundation/hardhat-toolbox@npm:5.0.0"
+  peerDependencies:
+    "@nomicfoundation/hardhat-chai-matchers": ^2.0.0
+    "@nomicfoundation/hardhat-ethers": ^3.0.0
+    "@nomicfoundation/hardhat-ignition-ethers": ^0.15.0
+    "@nomicfoundation/hardhat-network-helpers": ^1.0.0
+    "@nomicfoundation/hardhat-verify": ^2.0.0
+    "@typechain/ethers-v6": ^0.5.0
+    "@typechain/hardhat": ^9.0.0
+    "@types/chai": ^4.2.0
+    "@types/mocha": ">=9.1.0"
+    "@types/node": ">=18.0.0"
+    chai: ^4.2.0
+    ethers: ^6.4.0
+    hardhat: ^2.11.0
+    hardhat-gas-reporter: ^1.0.8
+    solidity-coverage: ^0.8.1
+    ts-node: ">=8.0.0"
+    typechain: ^8.3.0
+    typescript: ">=4.5.0"
+  checksum: 10c0/34087be8fa62a5e4d6536c46719d0ad3a5414f1e440199d02947ad76bb26850eb2779dd34ff81a12d6ff2a24774b4f5a577e6a5a6f1342b8c8a46f96c9ec1fb4
   languageName: node
   linkType: hard
 
@@ -995,6 +1014,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "contracts@workspace:packages/contracts"
   dependencies:
+    "@nomicfoundation/hardhat-toolbox": "npm:^5.0.0"
     hardhat: "npm:^2.24.3"
   languageName: unknown
   linkType: soft
@@ -1224,17 +1244,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fp-ts@npm:1.19.3":
+"fp-ts@npm:1.19.3, fp-ts@npm:^1.0.0":
   version: 1.19.3
   resolution: "fp-ts@npm:1.19.3"
   checksum: 10c0/a016cfc98ad5e61564ab2d53a5379bbb8254642b66df13ced47e8c1d8d507abf4588d8bb43530198dfe1907211d8bae8f112cab52ba0ac6ab055da9168a6e260
-  languageName: node
-  linkType: hard
-
-"fp-ts@npm:^1.0.0":
-  version: 1.19.5
-  resolution: "fp-ts@npm:1.19.5"
-  checksum: 10c0/2a330fa1779561307740c26a7255fdffeb1ca2d0c7448d4dc094b477b772b0c8f7da1dfc88569b6f13f6958169b63b5df7361e514535b46b2e215bbf03a3722d
   languageName: node
   linkType: hard
 
