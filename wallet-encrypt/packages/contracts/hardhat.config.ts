@@ -1,7 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import { defineAccountTask } from './tasks/wallet';
-import fs from 'fs';
 import "@nomicfoundation/hardhat-toolbox";
+import fs from 'fs';
 import * as dotenv from "dotenv";
 const defaultNetwork = 'localhost';
 
@@ -12,6 +12,8 @@ const {
   PRIVATE_KEY,
   NODE_PROVIDER_MATIC_RPC_URL,
   NODE_PROVIDER_SEPOLIA_RPC_URL,
+  POLYGONSCAN_API_KEY,
+  SEPOLIASCAN_API_KEY
 } = process.env;
 
 const MNEMONIC = process.env.MNEMONIC ? process.env.MNEMONIC : mnemonic();
@@ -59,6 +61,12 @@ const config: HardhatUserConfig = {
       url: String(NODE_PROVIDER_MATIC_RPC_URL),
     },
   },
+  etherscan: {
+    apiKey: {
+      sepolia: SEPOLIASCAN_API_KEY || 'undefined',
+      matic: POLYGONSCAN_API_KEY || 'undefined',
+    },
+  }
 };
 
 export default config;
