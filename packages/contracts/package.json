@@ -1,0 +1,16 @@
+{
+  "name": "contracts",
+  "packageManager": "yarn@4.9.2",
+  "scripts": {
+    "compile": "hardhat clean && hardhat compile",
+    "test": "hardhat test",
+    "account": "hardhat account",
+    "deploy": "hardhat deploy --report-gas",
+    "generate": "hardhat generate"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "dotenv": "^16.5.0",
+    "hardhat": "^2.24.3"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "web3privacy",
+  "version": "0.1.0",
+  "description": "web3privacy hackathon project to encrypt data authenticated via crypto wallets",
+  "main": "index.js",
+  "repository": "git@github.com:inblockio/web3privacy.git",
+  "author": "web3privacy-Encrypt-it",
+  "license": "MIT",
+  "packageManager": "yarn@4.9.2",
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  }
+}
