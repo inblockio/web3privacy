@@ -35,8 +35,7 @@ This should install the four packages:
 You also have the opportuniy to `cd site` and `yarn build`. The express erver will then serve the React on  [localhost:3000](localhost:3000) instead.
 Hopefully we will deploy this version by sumbission time.
 * `snap` runs a port for a Metamaks snap which holds the secret keys. The React frontend interatcs with the snap through the snap's JSON-RPC on port 8080.
-* `contracts` contains the publick key registration contract deployment code. See that packages [README](./wallet-encrypt/contracts/README).
-
+* `contracts` contains the publick key registration contract deployment code. See that packages [README](./wallet-encrypt/packages/contracts/README.md).
 The three servers will run when you run `yarn install` from the `wallet-encrypt` repo.
 
 ##### HTML frontend instructions:
