@@ -12,10 +12,16 @@ Collab git, to have a shared resource. Including proposal for EIP and and the Ha
 - **Team/Contributors:**
 
 @David hacker
+
 @Six hacker and business developer
+
 @Mörk cryptography, development
+
 @Flo - Developer and DevOp
+
 @Timotheus architecture and vision
+
+@positonic (James) - hacker
 
 - **Repository:** [Link to your code repository]
 - **Demo:** [Link to live demo, video, or screenshots]
