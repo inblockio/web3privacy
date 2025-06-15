@@ -1,3 +1,38 @@
-/ens_tooling /node_modules/
-/.idea/
-node_modules
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Node modules
+node_modules/
+**/node_modules/
+
+# Build artifacts
+dist/
+out/
+build/
+cache/
+artifacts/
+coverage/
+
+# Hardhat-specific
+.env
+.env.local
+.mnemonic.txt
+.typechain/
+.cache/
+.deployments/
+
+# Editor & IDEs
+.idea/
+.vscode/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Optional: Ignore yarn/lockfile backups
+.yarn-integrity
+.yarn/cache
+.pnp.*
