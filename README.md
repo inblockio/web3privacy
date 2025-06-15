@@ -32,6 +32,10 @@ Ethereum wallets register their asymmetric keys within the ethereum network (e.g
 - OpenPGPJS for encrytion
 - Node.js for serving the FE and demo upload/download (could be IPFS, etc)
 
+## Overview 
+![Concept Diagram](./0_docs/concept.png)
+
+
 ## Privacy Impact
 We enable encryption in the Ethereum ecosystem for all its users.
 
