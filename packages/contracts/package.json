@@ -1,0 +1,7 @@
+{
+  "name": "contracts",
+  "packageManager": "yarn@4.9.2",
+  "devDependencies": {
+    "hardhat": "^2.24.3"
+  }
+}
