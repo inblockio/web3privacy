@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web3 PGP</title>
+</head>
+<body>
+  <h2>Web3 Encryption w OpenPGP</h2>
+  <hr>
+  <button id="connectMetaMask">Connect MetaMask</button>
+  <h4>Connected Account:</h4>
+  <pre id="connectedAccount"></pre>
+  <hr>
+  <button id="generate">Generate Keypair</button>
+  <h4>Public Key:</h4>
+  <pre id="publicKey"></pre>
+  <h4>Private Key:</h4>
+  <pre id="privateKey"></pre>
+  <h4>Revocation Certificate:</h4>
+  <pre id="revocationCertificate"></pre>
+  <hr>
+  <button id="storePublicKey">Store OpenPGP Pub Key in Contract</button>
+  <hr>
+  <h4>Get RSA Public Key from Contract:</h4>
+  <label for="ethAddress">Enter ETH Address:</label>
+  <input type="text" id="ethAddress" placeholder="Enter Ethereum Address">
+  <button id="getPublicKey">Get Public Key</button>
+  <h4>RSA Public Key:</h4>
+  <pre id="fetchedPublicKey"></pre>
+  <hr>
+  <h4>Encrypt a File:</h4>
+  <input type="file" id="fileInput">
+  <button id="encryptFile">Encrypt & Upload File</button>
+  <h4>Encrypted File:</h4>
+  <a id="downloadEncryptedFile" style="display: none" href="#" download="encrypted_file.gpg">Download Encrypted File from Browser Storage</a>
+  <hr>
+
+  <!-- New section for download link -->
+  <h4>Download the Uploaded Encrypted File:</h4>
+  <a id="downloadUploadedFile" style="display: none" href="#" target="_blank">Download Encrypted File</a>
+  <hr>
+
+  <script src="https://unpkg.com/openpgp@6.1.1/dist/openpgp.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.6.8/dist/ethers.umd.min.js"></script>
+  <script>
+    let userAddress = null; // Variable to store the connected user address
+    let publicKey = null; // Variable to store the generated public key
+    const contractAddress = '0x34C2fd871e36aE116C70F5990Da6E7B5Df15CB21'; // Hardcode contract address here
+
+    if (typeof window.ethereum === 'undefined') {
+      alert("MetaMask or Web3 provider is not detected. Please install MetaMask.");
+    } else {
+      const ethereum = window.ethereum;
+
+      // Request account access
+      async function requestAccount() {
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        return accounts[0];  // Return the first account
+      }
+
+      // Connect MetaMask
+      document.getElementById('connectMetaMask').addEventListener('click', async () => {
+        try {
+          userAddress = await requestAccount(); // Get the user account
+          document.getElementById('connectedAccount').textContent = userAddress; // Show connected account
+          alert('MetaMask connected: ' + userAddress);
+        } catch (error) {
+          console.error('Error connecting to MetaMask:', error);
+          alert('Failed to connect to MetaMask: ' + error.message);
+        }
+      });
+
+      // Generate RSA Keypair
+      document.getElementById('generate').addEventListener('click', async () => {
+        try {
+          const { privateKey, publicKey: generatedPublicKey, revocationCertificate } = await openpgp.generateKey({
+              type: 'ecc',  // Type of the key
+              curve: 'curve25519', // ECC curve name
+              userIDs: [{ name: 'Jon Smith', email: 'jon@example.com' }],  // User information
+              passphrase: 'super long and hard to guess secret',  // Protects the private key
+              format: 'armored'  // Output key format
+          });
+
+          publicKey = generatedPublicKey;  // Store the generated public key
+          document.getElementById('publicKey').textContent = publicKey;
+          document.getElementById('privateKey').textContent = "generated 🤫";
+          document.getElementById('revocationCertificate').textContent = "generated 🤫";
+
+          // Store the public key in the contract
+          document.getElementById('storePublicKey').addEventListener('click', async () => {
+            if (!userAddress) {
+              alert('Please connect MetaMask first.');
+              return;
+            }
+            if (!publicKey) {
+              alert('Please generate the public key first.');
+              return;
+            }
+
+            const provider = new ethers.providers.Web3Provider(window.ethereum); // Corrected: lowercase p
+            const signer = provider.getSigner(); // Get the signer from MetaMask
+
+            const contract = new ethers.Contract(contractAddress, [
+              "function storeRSAPublicKey(string memory publicKey) public"
+            ], signer);
+
+            try {
+              const tx = await contract.storeRSAPublicKey(publicKey);
+              await tx.wait(); // Wait for the transaction to be validated
+              alert('Transaction sent and confirmed: ' + tx.hash);
+            } catch (error) {
+              console.error('Error storing public key in contract:', error);
+              alert('Error storing public key in contract: ' + error.message);
+            }
+          });
+
+        } catch (error) {
+          console.error('Error generating keypair:', error);
+          alert('Error generating keypair: ' + error.message);
+        }
+      });
+
+      // Fetch RSA Public Key from Contract
+      document.getElementById('getPublicKey').addEventListener('click', async () => {
+        const ethAddress = document.getElementById('ethAddress').value;
+
+        if (!ethAddress) {
+          alert('Please enter a valid Ethereum address.');
+          return;
+        }
+
+        const provider = new ethers.providers.Web3Provider(window.ethereum); // Corrected: lowercase p
+        const signer = provider.getSigner(); // Get the signer from MetaMask
+
+        const contract = new ethers.Contract(contractAddress, [
+          "function getRSAPublicKey(address user) public view returns (string memory)"
+        ], signer);
+
+        try {
+          const rsaPublicKey = await contract.getRSAPublicKey(ethAddress);
+          document.getElementById('fetchedPublicKey').textContent = rsaPublicKey; // Display the fetched public key
+        } catch (error) {
+          console.error('Error fetching public key from contract:', error);
+          alert('Error fetching public key: ' + error.message);
+        }
+      });
+
+      // Encrypt File and Upload Automatically with Random File Name
+      document.getElementById('encryptFile').addEventListener('click', async () => {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+
+        if (!file) {
+          alert('Please select a file to encrypt.');
+          return;
+        }
+
+        try {
+          // Convert file to binary (Uint8Array)
+          const fileArrayBuffer = await file.arrayBuffer();
+          const fileContents = new Uint8Array(fileArrayBuffer);
+
+          if (!fileContents.length) {
+            alert('The file is empty or could not be read.');
+            return;
+          }
+
+          // Generate a random file name
+          const randomFileName = `encrypted_file_${Math.random().toString(36).substring(2, 15)}.gpg`;
+
+          // Read the public key for encryption
+          const publicKeyObj = await openpgp.readKey({ armoredKey: publicKey });
+
+          // Create a message from the binary data
+          const message = await openpgp.createMessage({ binary: fileContents });
+
+          // Encrypt the binary message using OpenPGP.js
+          const encrypted = await openpgp.encrypt({
+            message, // input as Message object (binary)
+            encryptionKeys: publicKeyObj,
+            format: 'binary' // don't ASCII armor, binary format
+          });
+
+          // Prepare the encrypted data for upload
+          const encryptedBlob = new Blob([encrypted], { type: 'application/octet-stream' });
+
+          // Prepare the FormData to send the encrypted file to the server with the random file name
+          const formData = new FormData();
+          formData.append('file', encryptedBlob, randomFileName); // Add the encrypted file to FormData
+
+          // Upload the encrypted data to the server
+          const response = await fetch('/upload', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (response.ok) {
+            const responseData = await response.json();
+            alert('Encrypted file uploaded successfully!');
+
+            // Generate the URL for downloading the uploaded file
+            const downloadLink = `/uploads/${randomFileName}`;
+            const downloadLinkElement = document.getElementById('downloadUploadedFile');
+            downloadLinkElement.href = downloadLink;
+            downloadLinkElement.style.display = 'block'; // Show the download link
+          } else {
+            alert('Failed to upload the encrypted file.');
+          }
+
+        } catch (error) {
+          console.error('Error encrypting the file:', error);
+          alert('Error encrypting the file: ' + error.message);
+        }
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,24 +1,47 @@
 # Encrypt IT!
-Collab git, to have a shared resource. Including proposal for EIP and and the Hack.MD. Idea to contemplate: PGP for Web3.
-
-## What is what
-
-- 1_rsa_enc_dec is an implementation draft for in-browser RSA-OAEP-256 key generation, encryption and decryption
-- 2_sol_pub_key_store includes the solidity contract to store RSA pub keys mapped to Eth address | Pol ca: 0x34C2fd871e36aE116C70F5990Da6E7B5Df15CB21
-- 3_wallet-encrypt is the nodejs service, running on a traditional server for demo purposes (but it can be replace to a decentralized storage, making the project 99% web3, except the ETH API)
+Collab git, to have a shared resource. Including proposal for EIP and and the Hack.MD. Idea to contemplate: PGP for/with Web3.
 
 ## Submission
 - **Track:** Applied Encryption
 - **Team/Contributors:**
 
 @David hacker
+
 @Six hacker and business developer
+
 @Mörk cryptography, development
+
 @Flo - Developer and DevOp
+
 @Timotheus architecture and vision
+
+@positonic (James) - hacker
 
 - **Repository:** [Link to your code repository]
 - **Demo:** [Link to live demo, video, or screenshots]
+
+##### Monorepo instructions
+```
+git clone
+cd wallet-encrypt
+yarn install
+```
+
+This should install the four packages:
+
+* `express` privdes backend functionality to mimic decentralised file storag (our demo is a proof of conecpt and we didn't have time to implement d storage)
+* `site` is a React frontend - running `yarn start` from the `wallet-encrypt` folder will run this package's start script and serve the react on [localhost:8000](localhost:8000).
+
+You also have the opportuniy to `cd site` and `yarn build`. The express erver will then serve the React on  [localhost:3000](localhost:3000) instead.
+Hopefully we will deploy this version by sumbission time.
+* `snap` runs a port for a Metamaks snap which holds the secret keys. The React frontend interatcs with the snap through the snap's JSON-RPC on port 8080.
+* `contracts` contains the publick key registration contract deployment code. See that packages [README](./wallet-encrypt/packages/contracts/README.md).
+The three servers will run when you run `yarn install` from the `wallet-encrypt` repo.
+
+##### HTML frontend instructions:
+`cd 1_working_demo`, follow the install instructions in that folder's [README](./1_working_demo/README.md), including running the express server.
+
+This will run the basic `index.html` monolith of our frontend.
 
 ## Description (TL;DR)
 Where is the secure encryption/decryption functionality with Ethereum wallets?
