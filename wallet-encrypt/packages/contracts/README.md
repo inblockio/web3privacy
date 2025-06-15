@@ -1,42 +1,97 @@
-# Contracts package
+# 📦 Contracts Package
 
-Hardhat package for smart contracts and on-chain interactions
+Smart contract package using **Hardhat**, **TypeScript**, and **Hardhat Ignition** for managing on-chain interactions, deployment, and verification.
 
-## Installation
+---
 
-Please follow the steps in the [root readme file](../../README.md).
+## 🚀 Stack Overview
 
-## Setting up your local environment
+- [Hardhat](https://hardhat.org) with TypeScript
+- [Hardhat Ignition](https://hardhat.org/ignition) for structured deployments
+- Solidity for Smart Contracts
 
-Before running the local environment or deploying, you need to set the corresponding environment variables in an `.env` within the frontend directory. Fill out according to `.env.example`. Best to ask someone from the team to get the data to connect to our Firebase instance.
+---
 
-# 🏃‍♀️ Live deployment of the smart contracts on a public network
+## 🔧 Installation
 
-## Set up deployer account
+Please follow the setup steps in the [monorepo root README](../../README.md).
 
-If you already have a funded account and the corresponding secret
-phrase, paste that phrase into `packages/hardhat/mnemonic.txt` or into `.env`
+---
 
-If not, generate new secret phrase (mnemonic)
+## 🧪 Running Tests
 
-    yarn generate
-
-Display the current account (you can check if your accounts are funded with  native tokens like ETH or testnet ETH), fund it if necessary
-
-    yarn account
-
-
-## Deployment
-
-Deployment of the `testDeployment` module with the `RSAPublicKeyStorage.sol` contract via Hardhat-ignition, here, to the sepolia network:
+```bash
+yarn test
 ```
+
+Runs the Hardhat test suite under `test/`.
+
+---
+
+## ⚙️ Compile Contracts
+
+```bash
+yarn compile
+```
+
+Compiles the Solidity contracts using Hardhat and generates TypeChain bindings.
+
+---
+
+## 🧪 Local Setup
+
+Before working with deployments or the testnet, create a `.env` file (use `.env.example` as a reference) and configure RPC URLs and secrets.  
+If you need Firebase credentials or private keys, ask a team member.
+
+---
+
+## 🔐 Deployer Setup
+
+You can deploy using either:
+- a `mnemonic.txt` file (`packages/contracts/mnemonic.txt`)
+- or a `.env` file with `PRIVATE_KEY` or `MNEMONIC`
+
+Generate a new mnemonic (optional):
+
+```bash
+yarn generate
+```
+
+Check the current deployer address and balance:
+
+```bash
+yarn account
+```
+
+---
+
+## 🚀 Deploy to Sepolia via Hardhat Ignition
+
+Deploy the `RSAPublicKeyStorage` contract using the `testDeployment` module:
+
+```bash
 npx hardhat ignition deploy ./ignition/modules/testDeployment.ts --network sepolia
 ```
 
+---
 
-## Faucet Links
+## ✅ Verify on Etherscan
 
-[Google  Cloud Sepolia Faucet](http://cloud.google.com/application/web3/faucet/ethereum/sepolia) 
+After deployment, verify the contract on Sepolia (or other supported networks):
 
-For now, you can use this funded testnet mnemonic:
-`shoe camera work agent flight market fault blouse energy island glove under`
+```bash
+npx hardhat verify --network sepolia <contract-address>
+```
+
+---
+
+## 🔗 Faucet Links
+
+- [Google Cloud Sepolia Faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia)
+
+
+---
+
+## 🧠 Tip
+
+This project supports both `PRIVATE_KEY` and `MNEMONIC`-based deployments via `.env` or `mnemonic.txt`, with flexible gas settings per network.
