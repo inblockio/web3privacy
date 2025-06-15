@@ -8,6 +8,9 @@ const fs = require('fs');
 const app = express();
 const port = 3000;
 
+const publicDir = path.join(__dirname, '../site/public');
+app.use(express.static(publicDir));
+
 // Ensure the 'uploads' folder exists
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
