@@ -1,7 +1,7 @@
 # [Encrypt it!]
 
 - **Track:** Applied Encryption, Public Goods
-- **Team/Contributors:** Timotheus, six, MarcelJay, James, Mörk
+- **Team/Contributors:** Timotheus, six, MarcelJay, James, Mörk, David, Florian
 - **Repository:** [[Link to your code repos]](https://github.com/inblockio/web3privacy/)
 - **Demo:** [[Link to live demo, video, or screenshots]](https://pgp.gen6.app/)
 
