@@ -4,21 +4,374 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Web3 PGP</title>
+  <style>
+    /* Modern CSS styling for Web3 PGP */
+    :root {
+      --primary-color: #00ff9d;
+      --primary-hover: #00cc7d;
+      --secondary-color: #1a1a1a;
+      --background-color: #0a0a0a;
+      --card-background: #1e1e1e;
+      --text-color: #e0e0e0;
+      --border-color: #2a2a2a;
+      --success-color: #00ff9d;
+      --error-color: #ff3d3d;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 255, 157, 0.1);
+      --shadow: 0 4px 6px -1px rgba(0, 255, 157, 0.1), 0 2px 4px -2px rgba(0, 255, 157, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: var(--background-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0;
+      position: relative;
+      margin: 0;
+    }
+
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: 20%;
+      background: linear-gradient(45deg, 
+        var(--background-color),
+        var(--card-background),
+        var(--background-color)
+      );
+      opacity: 0.8;
+      z-index: 1;
+    }
+
+    body::before {
+      left: 0;
+      background: linear-gradient(90deg,
+        var(--background-color),
+        var(--card-background) 50%,
+        transparent
+      );
+    }
+
+    body::after {
+      right: 0;
+      background: linear-gradient(-90deg,
+        var(--background-color),
+        var(--card-background) 50%,
+        transparent
+      );
+    }
+
+    .container {
+      max-width: 60%;
+      width: 60%;
+      margin: 0 auto;
+      background-color: var(--card-background);
+      padding: 2rem;
+      border-radius: 1rem;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+      position: relative;
+      z-index: 2;
+    }
+
+    h2 {
+      color: var(--text-color);
+      margin-bottom: 1.5rem;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      text-align: center;
+      text-shadow: 0 0 10px rgba(0, 255, 157, 0.2);
+    }
+
+    h4 {
+      color: var(--text-color);
+      margin: 1.25rem 0 0.75rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    hr {
+      border: none;
+      border-top: 2px solid var(--border-color);
+      margin: 2rem 0;
+    }
+
+    .section {
+      background-color: var(--card-background);
+      padding: 2rem;
+      border-radius: 0.5rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+      border: 1px solid var(--border-color);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+      opacity: 0.5;
+    }
+
+    .section:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 12px -1px rgba(0, 255, 157, 0.15), 0 4px 6px -2px rgba(0, 255, 157, 0.15);
+      border-color: var(--primary-color);
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: var(--background-color);
+      border: none;
+      padding: 0.875rem 1.5rem;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      margin: 0.5rem 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 120px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    button:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 0 15px rgba(0, 255, 157, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    input[type="text"],
+    input[type="file"] {
+      padding: 0.875rem;
+      border: 2px solid var(--border-color);
+      border-radius: 0.25rem;
+      font-size: 0.95rem;
+      width: 100%;
+      max-width: 400px;
+      margin: 0.5rem 0;
+      transition: all 0.2s ease;
+      background-color: var(--card-background);
+      color: var(--text-color);
+    }
+
+    input[type="text"]:focus,
+    input[type="file"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(0, 255, 157, 0.2);
+    }
+
+    input[type="text"]::placeholder {
+      color: #64748b;
+    }
+
+    pre {
+      background-color: var(--background-color);
+      padding: 1.5rem;
+      border-radius: 0.25rem;
+      border: 1px solid var(--border-color);
+      overflow-x: auto;
+      font-size: 0.9rem;
+      margin: 0.5rem auto;
+      width: 100%;
+      min-height: 60px;
+      max-height: 300px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      line-height: 1.5;
+      color: var(--primary-color);
+      position: relative;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    pre::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent 48%, var(--primary-color) 49%, var(--primary-color) 51%, transparent 52%);
+      background-size: 20px 20px;
+      opacity: 0.05;
+      pointer-events: none;
+    }
+
+    /* Add a scrollbar style for pre elements */
+    pre::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    pre::-webkit-scrollbar-track {
+      background: var(--background-color);
+      border-radius: 4px;
+    }
+
+    pre::-webkit-scrollbar-thumb {
+      background: var(--primary-color);
+      border-radius: 4px;
+      opacity: 0.5;
+    }
+
+    pre::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Add a container for pre elements to ensure proper centering */
+    .pre-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 1rem 0;
+    }
+
+    a {
+      color: var(--primary-color);
+      text-decoration: none;
+      display: inline-block;
+      margin: 0.5rem 0;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    a:hover {
+      color: var(--primary-hover);
+      text-decoration: underline;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-color);
+    }
+
+    .file-upload-area {
+      border: 2px dashed var(--border-color);
+      border-radius: 0.5rem;
+      padding: 2rem;
+      text-align: center;
+      margin: 1rem 0;
+      transition: border-color 0.2s ease;
+      background-color: rgba(0, 255, 157, 0.05);
+    }
+
+    .file-upload-area:hover {
+      border-color: var(--primary-color);
+      background-color: rgba(0, 255, 157, 0.1);
+    }
+
+    .key-display {
+      background-color: var(--background-color);
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 5px;
+      margin: 1rem 0;
+    }
+
+    .alert-success {
+      background-color: rgba(0, 255, 157, 0.1);
+      color: var(--success-color);
+      border: 1px solid var(--success-color);
+    }
+
+    .alert-error {
+      background-color: rgba(255, 61, 61, 0.1);
+      color: var(--error-color);
+      border: 1px solid var(--error-color);
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+      
+      .section {
+        padding: 1.5rem;
+      }
+      
+      button {
+        width: 100%;
+      }
+      
+      input[type="text"],
+      input[type="file"] {
+        width: 100%;
+      }
+      
+      h2 {
+        font-size: 1.75rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <h2>Web3 Encryption w OpenPGP</h2>
   <hr>
   <button id="connectMetaMask">Connect MetaMask</button>
   <h4>Connected Account:</h4>
-  <pre id="connectedAccount"></pre>
+  <div class="pre-container">
+    <pre id="connectedAccount"></pre>
+  </div>
   <hr>
   <button id="generate">Generate Keypair</button>
   <h4>Public Key:</h4>
-  <pre id="publicKey"></pre>
+  <div class="pre-container">
+    <pre id="publicKey"></pre>
+  </div>
   <h4>Private Key:</h4>
-  <pre id="privateKey"></pre>
+  <div class="pre-container">
+    <pre id="privateKey"></pre>
+  </div>
   <h4>Revocation Certificate:</h4>
-  <pre id="revocationCertificate"></pre>
+  <div class="pre-container">
+    <pre id="revocationCertificate"></pre>
+  </div>
   <hr>
   <button id="storePublicKey">Store OpenPGP Pub Key in Contract</button>
   <hr>
@@ -27,7 +380,9 @@
   <input type="text" id="ethAddress" placeholder="Enter Ethereum Address">
   <button id="getPublicKey">Get Public Key</button>
   <h4>RSA Public Key:</h4>
-  <pre id="fetchedPublicKey"></pre>
+  <div class="pre-container">
+    <pre id="fetchedPublicKey"></pre>
+  </div>
   <hr>
   <h4>Encrypt a File:</h4>
   <input type="file" id="fileInput">

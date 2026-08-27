@@ -8,6 +8,15 @@ const fs = require('fs');
 const app = express();
 const port = 3000;
 
+// Serve static files from the current directory with explicit MIME types
+app.use(express.static(__dirname, {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    }
+  }
+}));
+
 // Ensure the 'uploads' folder exists
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
@@ -39,6 +48,17 @@ app.get('/', (req, res) => {
       return res.status(500).send('Error reading HTML file');
     }
     res.send(data); // Send the HTML file to the user
+  });
+});
+
+// Serve CSS file with correct MIME type
+app.get('/styles.css', (req, res) => {
+  res.setHeader('Content-Type', 'text/css');
+  fs.readFile(path.join(__dirname, 'styles.css'), 'utf8', (err, data) => {
+    if (err) {
+      return res.status(500).send('Error reading CSS file');
+    }
+    res.send(data);
   });
 });
 
